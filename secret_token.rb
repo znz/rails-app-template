@@ -33,3 +33,9 @@ end
 Rails.application.config.secret_key_base = ENV['SECRET_TOKEN'] || secure_token
   RUBY
 end
+
+if File.exist?('config/initializers/devise.rb')
+  gsub_file 'config/initializers/devise.rb', /config\.secret_key = .*/ do
+    "config.secret_key = ENV['DEVISE_SECRET_KEY'] || secure_token('.devise_secret_key')"
+  end
+end
