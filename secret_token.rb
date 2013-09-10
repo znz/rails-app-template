@@ -32,7 +32,6 @@ create_file 'config/initializers/secret_token.rb' do
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Rails.application.config.secret_token = ENV['SECRET_TOKEN'] || secure_token
 Rails.application.config.secret_key_base = ENV['SECRET_KEY_BASE'] || secure_token('.secret_key_base')
   RUBY
 end
