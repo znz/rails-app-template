@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# secure config/initializers/secret_token.rb for rails 4.0.0
+#
 # usage:
 #  rake rails:template LOCATION=path/to/secret_token.rb
 
