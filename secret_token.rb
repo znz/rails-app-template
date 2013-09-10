@@ -37,6 +37,16 @@ Rails.application.config.secret_key_base = ENV['SECRET_KEY_BASE'] || secure_toke
   RUBY
 end
 
+unless /secret token/ =~ File.read('.gitignore')
+  append_file '.gitignore' do
+    <<-GITIGNORE
+
+# secret token
+/.*secret*
+    GITIGNORE
+  end
+end
+
 if File.exist?('config/initializers/devise.rb')
   gsub_file 'config/initializers/devise.rb', /config\.secret_key = .*/ do
     "config.secret_key = ENV['DEVISE_SECRET_KEY'] || (require 'secure_token'; secure_token('.devise_secret_key'))"
