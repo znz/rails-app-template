@@ -52,4 +52,7 @@ if File.exist?('config/initializers/devise.rb')
   gsub_file 'config/initializers/devise.rb', /config\.secret_key = .*/ do
     "config.secret_key = ENV['DEVISE_SECRET_KEY'] || (require 'secure_token'; secure_token('.devise_secret_key'))"
   end
+  gsub_file 'config/initializers/devise.rb', /config\.pepper = .*/ do
+    "config.pepper = ENV['DEVISE_PEPPER'] || (require 'secure_token'; secure_token('.devise_pepper'))"
+  end
 end
