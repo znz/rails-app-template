@@ -25,7 +25,7 @@ def secure_token(token_file_name='.secret')
   else
     # Generate a new token and store it in token_file.
     token = SecureRandom.hex(64)
-    File.write(token_file, token)
+    File.write(token_file, token, perm: 0600)
     token
   end
 end
