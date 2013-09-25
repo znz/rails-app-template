@@ -11,7 +11,10 @@ unless /rspec-rails/ =~ File.read('Gemfile')
     gem 'factory_girl_rails'
   end
   gem_group :test do
-    gem 'database_cleaner'
+    # https://github.com/bmabey/database_cleaner/issues/224
+    # database_cleaner 1.1.[01] are broken for SQlite3
+    # (when DatabaseCleaner.strategy = :truncation)
+    gem 'database_cleaner', '< 1.1.0'
     gem 'email_spec'
     gem 'turnip'
     gem 'capybara'
