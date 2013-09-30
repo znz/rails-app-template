@@ -10,6 +10,20 @@ create_file 'app/assets/stylesheets/mobile.css', <<-CSS
  *= require jquery.mobile
  *= require_tree ./mobile
  */
+.notice {
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+    color: #468847;
+    border-radius: 4px 4px 4px 4px;
+    padding: 15px;
+}
+.alert {
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+    color: #B94A48;
+    border-radius: 4px 4px 4px 4px;
+    padding: 15px;
+}
 CSS
 create_file 'app/assets/stylesheets/mobile/.keep'
 
