@@ -48,7 +48,7 @@ create_file 'app/views/layouts/mobile.html.haml', <<-HAML
     = stylesheet_link_tag "mobile", media: "all"
     = javascript_include_tag "mobile"
   %body
-    %div(data-role="page" data-theme="b")
+    %div(data-role="page" data-theme="b" data-url="\#{request.original_url}")
       - if content_for?(:header)
         %div(data-role="header")
           = yield :header
