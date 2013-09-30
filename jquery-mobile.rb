@@ -56,8 +56,10 @@ create_file 'app/views/layouts/mobile.html.haml', <<-HAML
         %div(data-role="header")
           %h1= yield :title
       %div(data-role="content")
-        %p.notice= notice
-        %p.alert= alert
+        - if notice
+          %p.notice= notice
+        - if alert
+          %p.alert= alert
         = yield
       - if content_for?(:footer)
         %div(data-role="footer")
