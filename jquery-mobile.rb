@@ -30,10 +30,26 @@ create_file 'app/assets/stylesheets/mobile/.keep'
 create_file 'app/assets/javascripts/mobile.js', <<-JS
 //= require jquery
 //= require jquery_ujs
-//= require jquery.mobile
 //= require_tree ./mobile
+//= require jquery.mobile
 JS
 create_file 'app/assets/javascripts/mobile/.keep'
+create_file 'app/assets/javascripts/mobile/jqm_ja.js.coffee', <<-COFFEE
+$(document).on "mobileinit", ->
+  $.mobile.loader.prototype.options.text = "読み込み中です..."
+  $.mobile.loader.prototype.options.textVisible = false
+  $.mobile.pageLoadErrorMessage = "読み込みに失敗しました。"
+  $.mobile.page.prototype.options.backBtnText = "戻る"
+  $.mobile.listview.prototype.options.filterPlaceholder = "検索..."
+  $.mobile.table.prototype.options.columnBtnText = "列の増減..."
+  $.mobile.dialog.prototype.options.closeBtnText =
+    $.mobile.selectmenu.prototype.options.closeText = "閉じる"
+  $.mobile.collapsible.prototype.options.expandCueText = "クリックで開く"
+  $.mobile.collapsible.prototype.options.collapseCueText = "クリックで閉じる"
+$(document).on "pageloadfailed", (event, data) ->
+  if data.xhr.status == 401
+    window.location.href = data.absUrl
+COFFEE
 
 create_file 'app/views/layouts/mobile.html.haml', <<-HAML
 !!! 5
