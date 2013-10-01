@@ -46,6 +46,8 @@ $(document).on "mobileinit", ->
     $.mobile.selectmenu.prototype.options.closeText = "閉じる"
   $.mobile.collapsible.prototype.options.expandCueText = "クリックで開く"
   $.mobile.collapsible.prototype.options.collapseCueText = "クリックで閉じる"
+COFFEE
+create_file 'app/assets/javascripts/mobile/pageloadfailed.js.coffee', <<-COFFEE
 $(document).on "pageloadfailed", (event, data) ->
   if data.xhr.status == 401
     window.location.href = data.absUrl
