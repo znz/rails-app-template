@@ -53,6 +53,13 @@ $(document).on "pageloadfailed", (event, data) ->
     window.location.href = data.absUrl
 COFFEE
 
+insert_into_file 'config/environments/production.rb',
+  after: /^ *\# Precompile additional assets\.\n( *\#.*\n)*/ do
+  <<-RUBY
+  config.assets.precompile += %w( mobile.js mobile.css *.gif *.png *.jpg )
+  RUBY
+end
+
 create_file 'app/views/layouts/mobile.html.haml', <<-HAML
 !!! 5
 %html
