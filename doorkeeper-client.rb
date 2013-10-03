@@ -134,16 +134,19 @@ module FindForDoorkeeperOauth
 
   module ClassMethods
     def find_for_doorkeeper_oauth(auth, signed_in_resource=nil)
-      user = self.where(:provider => auth.provider, :uid => auth.uid).first
+      uid = auth.uid.to_s
+      id = uid.to_i
+      user = self.where(:provider => auth.provider, :uid => uid).first
       if user
         user.name = auth.info.name
         user.email = auth.info.email
         user.save! if user.changed?
       else
         user = self.create!({
+          id: id, # use same id
           name: auth.info.name,
           provider: auth.provider,
-          uid: auth.uid,
+          uid: uid,
           email: auth.info.email,
           #password: Devise.friendly_token[0,20]
         })
