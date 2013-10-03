@@ -62,7 +62,7 @@ RUBY
 uncomment_lines initializer, /config\.(timeout_in|expire_auth_token_on_timeout) =/
 gsub_file initializer, /config\.timeout_in = \d+\.minutes/ do
   # default: 30.minutes
-  'config.timeout_in = 1.minutes'
+  'config.timeout_in = 1.minutes if Rails.env.development?'
 end
 gsub_file initializer, /config\.expire_auth_token_on_timeout = false/ do
   'config.expire_auth_token_on_timeout = true'
