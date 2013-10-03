@@ -97,7 +97,7 @@ module AuthDoorkeeper
   def auto_authenticate_omniauth_user!
     unless current_user
       session[:user_return_to] = request.original_url
-      redirect_to user_omniauth_authorize_path(:doorkeeper)
+      redirect_to main_app.user_omniauth_authorize_path(:doorkeeper)
       return
     end
   end
