@@ -82,11 +82,15 @@ create_file 'app/views/layouts/mobile.html.haml', <<-HAML
           %h1= yield :title
       %div(data-role="content")
         - if notice
-          %p.notice= notice
+          %p.flash.notice= notice
         - if alert
-          %p.alert= alert
+          %p.flash.alert= alert
         = yield
       - if content_for?(:footer)
         %div(data-role="footer")
           = yield :footer
 HAML
+create_file 'app/assets/javascripts/mobile/remove_flash.js.coffee', <<-COFFEE
+$(document).on "pageshow", (event, ui) ->
+  $(".flash", ui.prevPage).remove()
+COFFEE
