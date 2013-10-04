@@ -112,7 +112,9 @@ RUBY
 
 create_file 'app/controllers/users/omniauth_callbacks_controller.rb', <<-RUBY
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  skip_filter  :auto_authenticate_omniauth_user!, only: :doorkeeper
+  protect_from_forgery except: :doorkeeper # https://github.com/plataformatec/devise/issues/2432
+  skip_filter :auto_authenticate_omniauth_user!, only: :doorkeeper
+
   def doorkeeper
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     @user = User.find_for_doorkeeper_oauth(request.env['omniauth.auth'], current_user)
