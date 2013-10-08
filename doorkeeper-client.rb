@@ -104,6 +104,32 @@ module AuthDoorkeeper
 end
 RUBY
 
+create_file 'app/controllers/concerns/doorkeeper_api_v1.rb', <<-RUBY
+module DoorkeeperApiV1
+  private
+
+  def access_token
+    return @access_token if defined?(@access_token)
+    config = Devise.omniauth_configs[:doorkeeper]
+    strategy = config.strategy_class.new(*config.args)
+    token = session[:doorkeeper_token]
+    @access_token = OAuth2::AccessToken.new(strategy.client, token)
+  end
+
+  def get_me
+    access_token.get("/api/v1/me.json").parsed
+  end
+
+  def get_posts
+    access_token.get("/api/v1/posts.json").parsed
+  end
+
+  def create_post(title, body)
+    access_token.post("/api/v1/posts", params: { post: { title: title, body: body } }).status == 200
+  end
+end
+RUBY
+
 insert_into_file 'app/controllers/application_controller.rb', <<-RUBY, after: /ActionController::Base\n/
   include AuthDoorkeeper
   before_filter :auto_authenticate_omniauth_user!
@@ -118,6 +144,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def doorkeeper
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     @user = User.find_for_doorkeeper_oauth(request.env['omniauth.auth'], current_user)
+    session[:doorkeeper_token] = request.env["omniauth.auth"]["credentials"]["token"]
 
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
