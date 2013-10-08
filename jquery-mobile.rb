@@ -4,6 +4,8 @@ unless /jquery_mobile_rails/ =~ File.read('Gemfile')
   abort('run again after `bundle install`')
 end
 
+apply File.expand_path('../app-assets.rb', __FILE__)
+
 create_file 'app/assets/stylesheets/mobile.css', <<-CSS
 /*
  *= require_self
