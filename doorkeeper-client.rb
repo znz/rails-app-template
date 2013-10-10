@@ -11,8 +11,10 @@ initializer = 'config/initializers/devise.rb'
 generate 'devise:install'
 gsub_file 'config/routes.rb', /^\s*devise_for :users( do\n[\s\S]*?^  end)?\n/ do
   <<-RUBY
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }, only: [:omniauth_callbacks] do
-    delete '/users/sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_scope :user do
+    get 'sign_in',  to: 'devise/sessions#new',     as: :new_user_session
+    get 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
   RUBY
 end
