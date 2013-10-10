@@ -15,10 +15,11 @@ if File.directory?("app/assets/javascripts/mobile")
   create_file "app/assets/javascripts/mobile/sisyphus-jqm.js.coffee", <<-COFFEE
 #= require jstorage
 #= require sisyphus
+sisyphus_form = ->
+  $('form[method="post"]').sisyphus({excludeFields: $('input[name=utf8], input[name=_method], input[name=authenticity_token]')})
 $(document).on "pageshow", (event, ui) ->
-  $('form').sisyphus({excludeFields: $('input[name=utf8], input[name=_method], input[name=authenticity_token]')})
-# save again when post failed
+  sisyphus_form()
 $(document).on "pageloadfailed", (event, data) ->
-  $('form').sisyphus().saveAllData()
+  sisyphus_form().saveAllData()
   COFFEE
 end
