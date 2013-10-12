@@ -153,7 +153,19 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       end
     else
       session['devise.doorkeeper_data'] = request.env['omniauth.auth']
-      redirect_to new_user_registration_url
+      if respond_to?(:new_user_registration_url)
+        redirect_to new_user_registration_url
+      else
+        redirect_to root_url
+      end
+    end
+  end
+
+  def after_omniauth_failure_path_for(scope)
+    if respond_to?(:new_session_path)
+      new_session_path(scope)
+    else
+      root_path
     end
   end
 end
