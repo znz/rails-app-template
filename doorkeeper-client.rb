@@ -207,3 +207,37 @@ class User < ActiveRecord::Base
   include FindForDoorkeeperOauth
 end
 RUBY
+
+if File.exist?('spec/support')
+  create_file 'spec/support/devise.rb', <<-RUBY
+RSpec.configure do |config|
+  config.include Devise::TestHelpers, type: :controller
+end
+  RUBY
+end
+
+if File.exist?('spec/factories')
+  create_file 'spec/factories/users.rb', <<-'RUBY'
+# Read about factories at https://github.com/thoughtbot/factory_girl
+
+FactoryGirl.define do
+  factory :user do
+    sequence(:name)  { |n| "user #{n}" }
+    sequence(:email) { |n| "user#{n}@example.com" }
+  end
+end
+  RUBY
+end
+
+Dir.glob('spec/controllers/*_controller_spec.rb') do |path|
+  case path
+  when %r!\Aspec/controllers/(.+)s_controller_spec\.rb\z!
+    model_name = $1
+    insert_into_file path, <<-RUBY, after: /^describe .*Controller do\n/
+  before (:each) do
+    @user = FactoryGirl.create(:user)
+    sign_in @user
+  end
+    RUBY
+  end
+end
