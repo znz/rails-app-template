@@ -19,13 +19,24 @@ gsub_file 'config/routes.rb', /^\s*devise_for :users( do\n[\s\S]*?^  end)?\n/ do
   RUBY
 end
 
+def secrets(key)
+  if Rails.application.respond_to?(:secrets)
+    append_file "config/secrets.yml" do
+      "  #{key}: <%= ENV[\"#{key.upcase}\"] %>\n"
+    end
+    "Rails.application.secrets.#{key}"
+  else
+    "ENV['#{key.upcase}'] || (require 'secure_token'; secure_token('#{key}'))"
+  end
+end
+
 # tokens
-if File.exist?('lib/secure_token.rb')
+if File.exist?('lib/secure_token.rb') || File.exist?('config/secrets.yml')
   gsub_file initializer, /config\.secret_key = .*/ do
-    "config.secret_key = ENV['DEVISE_SECRET_KEY'] || (require 'secure_token'; secure_token('devise_secret_key'))"
+    "config.secret_key = #{secrets('devise_secret_key')}"
   end
   gsub_file initializer, /config\.pepper = .*/ do
-    "config.pepper = ENV['DEVISE_PEPPER'] || (require 'secure_token'; secure_token('devise_pepper'))"
+    "config.pepper = #{secrets('devise_pepper')}"
   end
 end
 # OmniAuth
@@ -36,8 +47,8 @@ module OmniAuth
       option :name, :doorkeeper
 
       option :client_options, {
-        :site => ENV['DOORKEEPER_SITE'] || 'http://localhost:3000',
-        :authorize_path => '/users/oauth/authorize'
+        site: #{secrets('doorkeeper_site')} || 'http://localhost:3000',
+        authorize_path: #{secrets('doorkeeper_authorize_path')} || '/users/oauth/authorize',
       }
 
       uid { raw_info['id'] }
@@ -58,7 +69,7 @@ end
 RUBY
 insert_into_file initializer, <<-RUBY, after: /\# config\.omniauth .*\n/
   require Rails.root+'lib/omniauth/strategies/doorkeeper'
-  config.omniauth :doorkeeper, ENV['DOORKEEPER_APP_ID'], ENV['DOORKEEPER_APP_SECRET']
+  config.omniauth :doorkeeper, #{secrets('doorkeeper_app_id')}, #{secrets('doorkeeper_app_secret')}
 RUBY
 # auto logout
 uncomment_lines initializer, /config\.(timeout_in|expire_auth_token_on_timeout) =/
@@ -147,7 +158,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     session[:doorkeeper_token] = request.env["omniauth.auth"]["credentials"]["token"]
 
     if @user.persisted?
-      sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
+      sign_in_and_redirect @user, event: :authentication #this will throw if @user is not activated
       if is_navigational_format?
         set_flash_message(:notice, :success, kind: ENV['DOORKEEPER_SITE_NAME'] || 'Doorkeeper')
       end
@@ -179,7 +190,7 @@ module FindForDoorkeeperOauth
     def find_for_doorkeeper_oauth(auth, signed_in_resource=nil)
       uid = auth.uid.to_s
       id = uid.to_i
-      user = self.where(:provider => auth.provider, :uid => uid).first
+      user = self.where(provider: auth.provider, uid: uid).first
       if user
         user.name = auth.info.name
         user.email = auth.info.email
@@ -232,7 +243,7 @@ end
 Dir.glob('spec/controllers/*_controller_spec.rb') do |path|
   case path
   when %r!\Aspec/controllers/(.+)s_controller_spec\.rb\z!
-    model_name = $1
+    #model_name = $1
     insert_into_file path, <<-RUBY, after: /^describe .*Controller do\n/
   before (:each) do
     @user = FactoryGirl.create(:user)
