@@ -481,15 +481,14 @@ create_file 'lib/templates/slim/scaffold/show.html.slim', <<-'SLIM'
 - model_class = <%= class_name %>
 = sub_title t('.title', default: :"helpers.titles.#{action_name}", model: model_class.model_name.human)
 
-.panel.panel-default
- .panel-body.<%= singular_table_name.dasherize %> id="<%= singular_table_name %>_#{@<%= singular_table_name %>.id}"
-    dl.dl-horizontal
-    <%- attributes.each do |attribute| -%>
-      dt= model_class.human_attribute_name(:<%= attribute.name %>)
-      dd= @<%= singular_table_name %>.<%= attribute.name %>
-    <%- end -%>
-      dt= model_class.human_attribute_name(:created_at)
-      dd= l(@<%= singular_table_name %>.created_at, format: :long)
+.<%= singular_table_name.dasherize %> id="<%= singular_table_name %>_#{@<%= singular_table_name %>.id}"
+  dl.dl-horizontal
+  <%- attributes.each do |attribute| -%>
+    dt= model_class.human_attribute_name(:<%= attribute.name %>)
+    dd= @<%= singular_table_name %>.<%= attribute.name %>
+  <%- end -%>
+    dt= model_class.human_attribute_name(:created_at)
+    dd= l(@<%= singular_table_name %>.created_at, format: :long)
 
 .form-actions
   = link_to_back :<%= plural_table_name %>, body: t(:'helpers.titles.index', models: model_class.model_name.human.pluralize)
