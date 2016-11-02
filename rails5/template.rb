@@ -567,7 +567,7 @@ RUBY
 rake_db_migrate
 inject_into_class 'app/models/user.rb', 'User', "  NAME_MAX = 100\n  validates :name, presence: true, length: { maximum: NAME_MAX }\n"
 inject_into_class 'app/models/user.rb', 'User', "  scope :active, -> { where(deleted_at: nil) }\n"
-gsub_file 'app/models/user.rb', /devise /, 'devise :confirmable, '
+gsub_file 'app/models/user.rb', /^  devise /, '  devise :confirmable, '
 remove_file 'spec/factories/users.rb'
 create_file 'spec/factories/users.rb', <<-'RUBY'
 FactoryGirl.define do
