@@ -545,7 +545,13 @@ git_commit 'Add Procfile.dev'
 gem_bundle 'devise', generator: %w[devise:install] do
   gsub_file 'config/initializers/filter_parameter_logging.rb', /:password/, ':password, :password_confirmation'
 end
-
+gem_bundle 'omniauth' do
+  gem 'omniauth-facebook'
+  gem 'omniauth-github'
+  gem 'omniauth-google-oauth2'
+  gem 'omniauth-twitter'
+  bundle_install
+end
 generate 'devise', 'User'
 git_commit 'generate devise User'
 gem_bundle 'cancancan' do
@@ -567,7 +573,7 @@ RUBY
 rake_db_migrate
 inject_into_class 'app/models/user.rb', 'User', "  NAME_MAX = 100\n  validates :name, presence: true, length: { maximum: NAME_MAX }\n"
 inject_into_class 'app/models/user.rb', 'User', "  scope :active, -> { where(deleted_at: nil) }\n"
-gsub_file 'app/models/user.rb', /^  devise /, '  devise :confirmable, '
+gsub_file 'app/models/user.rb', /^  devise /, "  devise :confirmable, :lockable, :timeoutable, :omniauthable,\n         "
 remove_file 'spec/factories/users.rb'
 create_file 'spec/factories/users.rb', <<-'RUBY'
 FactoryGirl.define do
