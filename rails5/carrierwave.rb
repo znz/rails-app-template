@@ -160,7 +160,7 @@ git_commit 'Update attachment form'
 
 create_file 'app/assets/javascripts/preview.coffee', <<-'COFFEE'
 jQuery ->
-  $('form').on 'change', 'input[type="file"]', (e) ->
+  preview = (e) ->
     if !FileReader
       return false
     $preview = $(e.target).closest('.form-group').find('.preview')
@@ -184,5 +184,8 @@ jQuery ->
         $preview.append img
     reader.onload = onload(file)
     reader.readAsDataURL(file)
+  $(document).on 'turbolinks:load', ->
+    $('form').on 'change', 'input[type="file"]', preview
+
 COFFEE
 git_commit 'Add preview'
