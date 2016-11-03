@@ -79,7 +79,7 @@ module ImageTagHelper
   def attachment_image_tag(resource)
     thumb = resource.attachment_url(:thumb).to_s
     url = resource.attachment_url.to_s
-    link_to image_tag(thumb, alt: File.basename(url)), url, data: { no_turbolink: true }
+    link_to image_tag(thumb, alt: File.basename(url)), url, data: { turbolinks: false }
   end
 end
 RUBY

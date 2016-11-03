@@ -35,7 +35,7 @@ module TextToHtmlHelper
 
   def text_to_html(text)
     html = text_to_html_content(text)
-    content_tag(:div, html, class: 'text-to-html', data: { no_turbolink: true })
+    content_tag(:div, html, class: 'text-to-html', data: { turbolinks: false })
   end
 end
 RUBY
