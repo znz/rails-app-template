@@ -143,15 +143,17 @@ git_commit 'Download cache attachment'
 gsub_file 'lib/templates/slim/scaffold/_form.html.slim', '  = f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %>', <<-'SLIM'
   <%- case attribute.name -%>
   <%- when /attachment/ -%>
-  .form-group
-    = f.label :attachment, class: 'control-label col-sm-3'
+  .form-group class="#{f.object.errors.key?(:<%= attribute.name %>) ? :'has-error' : nil}"
+    = f.label :<%= attribute.name %>, class: 'control-label col-sm-3'
     .col-sm-9
-      = f.input_field :attachment
-      = f.hidden_field :attachment_cache
+      = f.input_field :<%= attribute.name %>
+      = f.hidden_field :<%= attribute.name %>_cache
+      = f.error :<%= attribute.name %>
+      = f.hint :<%= attribute.name %>
       .preview
-        - if f.object.attachment?
-          = attachment_image_tag f.object
-          /= f.input :remove_attachment, hint: attachment_image_tag(f.object), as: :boolean
+        - if f.object.<%= attribute.name %>?
+          = <%= attribute.name %>_image_tag f.object
+          /= f.input :remove_<%= attribute.name %>, hint: <%= attribute.name %>_image_tag(f.object), as: :boolean
   <%- else -%>
   = f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %>
   <%- end -%>
