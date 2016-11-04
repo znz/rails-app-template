@@ -67,7 +67,9 @@ ja:
   attributes:
     id: "ID"
     created_at: "作成日時"
+    created_on: "作成日"
     updated_at: "更新日時"
+    updated_on: "更新日"
 YAML
 git_commit 'Add default translations of attributes'
 
@@ -179,6 +181,119 @@ ja:
   YAML
 end
 gem_bundle 'ransack'
+
+create_file 'app/assets/stylesheets/search.scss', <<-'SCSS'
+input.search-date-control {
+  display: inline !important;
+  width: 40% !important;
+}
+SCSS
+create_file 'app/models/concerns/ransacker_created_on.rb', <<-'RUBY'
+require 'active_support/concern'
+
+module RansackerCreatedOn
+  extend ActiveSupport::Concern
+
+  included do
+    case connection.adapter_name
+    when 'PostgreSQL'
+      ransacker :created_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.created_at + interval '#{Time.zone.utc_offset}')")
+      end
+    when 'SQLite'
+      ransacker :created_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.created_at, '#{Time.zone.utc_offset} seconds')")
+      end
+    else
+      ransacker :created_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.created_at)")
+      end
+    end
+
+    def created_on
+      created_at.getlocal.to_date
+    end
+  end
+end
+RUBY
+create_file 'app/models/concerns/ransacker_updated_on.rb', <<-'RUBY'
+require 'active_support/concern'
+
+module RansackerUpdatedOn
+  extend ActiveSupport::Concern
+
+  included do
+    case connection.adapter_name
+    when 'PostgreSQL'
+      ransacker :updated_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.updated_at + interval '#{Time.zone.utc_offset}')")
+      end
+    when 'SQLite'
+      ransacker :updated_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.updated_at, '#{Time.zone.utc_offset} seconds')")
+      end
+    else
+      ransacker :updated_on, type: :date do |parent|
+        Arel::Nodes::SqlLiteral.new("date(#{parent.table_name}.updated_at)")
+      end
+    end
+
+    def updated_on
+      updated_at.getlocal.to_date
+    end
+  end
+end
+RUBY
+# http://www.h3.dion.ne.jp/~sakatsu/holiday_logic.htm#JS
+# http://addinbox.sakura.ne.jp/holiday_logic.htm
+if File.exist?("#{__dir__}/HolidayChk.js")
+  copy_file "#{__dir__}/HolidayChk.js", 'vendor/assets/javascripts/HolidayChk.js'
+else
+  get 'http://www.h3.dion.ne.jp/~sakatsu/HolidayChk.js', 'vendor/assets/javascripts/HolidayChk.js'
+  File.write('vendor/assets/javascripts/HolidayChk.js', open('vendor/assets/javascripts/HolidayChk.js', 'r:cp932:utf-8', &:read))
+end
+create_file 'app/assets/javascripts/datepicker.coffee', <<-'COFFEE'
+#= require jquery-ui/datepicker
+#= require jquery-ui/datepicker-ja
+#= require HolidayChk
+jQuery ($) ->
+  isHoliday = (day, selectable) ->
+    prmDate = $.datepicker.formatDate('yy/mm/dd', day)
+    name = ktHolidayName(prmDate)
+    if name
+      return [selectable, 'holiday0', name]
+    switch day.getDay()
+      when 0
+        return [selectable, 'sunday']
+      when 6
+        return [selectable, 'saturday']
+      else
+        return [true, '']
+  $.datepicker.setDefaults
+    dateFormat: 'yy-mm-dd'
+    beforeShowDay: (day) ->
+      isHoliday(day, true)
+  $(document).on 'turbolinks:load', ->
+    $('input[data-datepicker]').datepicker()
+COFFEE
+create_file 'app/assets/stylesheets/datepicker.scss', <<-'SCSS'
+//= require jquery-ui/datepicker
+.ui-widget-content {
+  .ui-datepicker-week-end .ui-state-default {
+    background-image: none; background-color: #FF9999
+  }
+  .ui-datepicker-week-end.saturday .ui-state-default {
+    background-image: none; background-color: #66CCFF
+  }
+  .holiday0 .ui-state-default {
+    background-image: none; background-color: #FF99FF
+  }
+  .holiday1 .ui-state-default {
+    background-image: none; background-color: #FFFF33
+  }
+}
+SCSS
+git_commit 'Add files related search form'
 
 create_file 'app/helpers/query_params_helper.rb', <<-'RUBY'
 # this module includes in controller too
@@ -435,7 +550,7 @@ create_file 'lib/templates/slim/scaffold/_form.html.slim', <<-'SLIM'
 <%- end -%>
 
   .form-group
-    .col-md-10.col-md-offset-2
+    .col-sm-offset-3.col-sm-9
       = link_to_cancel :<%= plural_table_name %>
       '
       = link_to_show @<%= singular_table_name %>
@@ -453,14 +568,30 @@ create_file 'lib/templates/slim/scaffold/index.html.slim', <<-'SLIM'
 <% attributes.each do |attribute| -%>
   <%- unless attribute.reference? -%>
     .form-group
-      .col-md-2
+      .col-sm-3
         = f.label :<%= attribute.name %>_cont
-      .col-md-10
+      .col-sm-9
         = f.text_field :<%= attribute.name %>_cont, class: 'form-control', placeholder: model_class.human_attribute_name(:<%= attribute.name %>)
   <%- end -%>
 <% end -%>
+    - if model_class < RansackerCreatedOn
+      .form-group
+        .col-sm-3
+          = f.label :created_on_gteq, model_class.human_attribute_name(:created_on)
+        .col-sm-9
+          = f.text_field :created_on_gteq, class: 'form-control search-date-control', data: { datepicker: true }
+          = " 〜 "
+          = f.text_field :created_on_lteq, class: 'form-control search-date-control', data: { datepicker: true }
+    - if model_class < RansackerUpdatedOn
+      .form-group
+        .col-sm-3
+          = f.label :updated_on_gteq, model_class.human_attribute_name(:updated_on)
+        .col-sm-9
+          = f.text_field :updated_on_gteq, class: 'form-control search-date-control', data: { datepicker: true }
+          = " 〜 "
+          = f.text_field :updated_on_lteq, class: 'form-control search-date-control', data: { datepicker: true }
     .form-group
-      .col-md-offset-2.col-md-10
+      .col-sm-offset-3.col-sm-9
         = f.button icon(:search)+t(:'helpers.links.search'), class: 'btn btn-primary'
         '
         = link_to_remove_search(:<%= plural_table_name %>)
