@@ -472,6 +472,8 @@ table.table.table-striped.table-hover
 <% attributes.each do |attribute| -%>
       th= sort_link @q, :<%= attribute.name %>
 <% end -%>
+      th= sort_link @q, :created_at
+      th= sort_link @q, :updated_at
       th= t '.actions', default: :'helpers.actions'
 
   tbody
@@ -481,6 +483,8 @@ table.table.table-striped.table-hover
 <% attributes.each do |attribute| -%>
         td= <%= singular_table_name %>.<%= attribute.name %>
 <% end -%>
+        td= l(<%= singular_table_name %>.created_at, format: :long)
+        td= l(<%= singular_table_name %>.updated_at, format: :long)
         td
           = link_to_show <%= singular_table_name %>
           = link_to_edit <%= singular_table_name %>
