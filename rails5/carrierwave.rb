@@ -161,7 +161,7 @@ SLIM
 git_commit 'Update attachment form'
 
 create_file 'app/assets/javascripts/preview.coffee', <<-'COFFEE'
-jQuery ->
+jQuery ($) ->
   preview = (e) ->
     if !FileReader
       return false
@@ -188,6 +188,5 @@ jQuery ->
     reader.readAsDataURL(file)
   $(document).on 'turbolinks:load', ->
     $('form').on 'change', 'input[type="file"]', preview
-
 COFFEE
 git_commit 'Add preview'
