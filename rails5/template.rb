@@ -576,16 +576,14 @@ create_file 'lib/templates/slim/scaffold/index.html.slim', <<-'SLIM'
 <% end -%>
     - if model_class < RansackerCreatedOn
       .form-group
-        .col-sm-3
-          = f.label :created_on_gteq, model_class.human_attribute_name(:created_on)
+        = f.label :created_on_gteq, model_class.human_attribute_name(:created_on), class: 'control-label col-sm-3'
         .col-sm-9
           = f.text_field :created_on_gteq, class: 'form-control search-date-control', data: { datepicker: true }
           = " 〜 "
           = f.text_field :created_on_lteq, class: 'form-control search-date-control', data: { datepicker: true }
     - if model_class < RansackerUpdatedOn
       .form-group
-        .col-sm-3
-          = f.label :updated_on_gteq, model_class.human_attribute_name(:updated_on)
+        = f.label :updated_on_gteq, model_class.human_attribute_name(:updated_on), class: 'control-label col-sm-3'
         .col-sm-9
           = f.text_field :updated_on_gteq, class: 'form-control search-date-control', data: { datepicker: true }
           = " 〜 "
