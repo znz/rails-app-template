@@ -18,6 +18,12 @@ def bundle_install
   end
 end
 
+def bundle_update
+  Bundler.with_clean_env do
+    run 'bundle update'
+  end
+end
+
 def gem_bundle(name, version = nil, message: "Use #{name} gem", group: false, generator: false)
   options = {}
   if group

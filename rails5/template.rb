@@ -78,16 +78,6 @@ gem_bundle 'dotenv-rails', group: [:development, :test] do
   create_file '.env', <<-'ENV'
 MAIL_FROM=from@example.com
   ENV
-  create_file '.env.development', <<-'ENV'
-FACEBOOK_KEY=dummy
-FACEBOOK_SECRET=dummy
-GITHUB_CONSUMER_KEY=dummy
-GITHUB_CONSUMER_SECRET=dummy
-GOOGLE_CLIENT_ID=dummy
-GOOGLE_CLIENT_SECRET=dummy
-TWITTER_CONSUMER_KEY=dummy
-TWITTER_CONSUMER_SECRET=dummy
-  ENV
 end
 
 gem_bundle 'bootstrap-sass' do
@@ -733,13 +723,6 @@ git_commit 'Add Procfile.dev'
 gem_bundle 'devise', generator: %w[devise:install] do
   gsub_file 'config/initializers/filter_parameter_logging.rb', /:password/, ':password, :password_confirmation'
 end
-gem_bundle 'omniauth' do
-  gem 'omniauth-facebook'
-  gem 'omniauth-github'
-  gem 'omniauth-google-oauth2'
-  gem 'omniauth-twitter'
-  bundle_install
-end
 generate 'devise', 'User'
 git_commit 'generate devise User'
 gem_bundle 'cancancan' do
@@ -760,48 +743,12 @@ gsub_file migration_file, /\n\n\n/, <<-RUBY
 RUBY
 rake_db_migrate
 
-gsub_file 'app/models/user.rb', /^  devise /, "  devise :confirmable, :lockable, :timeoutable, :omniauthable,\n         "
+gsub_file 'app/models/user.rb', /^  devise /, "  devise :confirmable, :lockable, :timeoutable,\n         "
 gsub_file 'config/routes.rb', 'devise_for :users', %q(devise_for :users, path_prefix: 'auth', path_names: { sign_in: 'login', sign_out: 'logout' })
 gsub_file 'config/initializers/devise.rb', '# config.send_password_change_notification = false', 'config.send_password_change_notification = true'
 gsub_file 'config/initializers/devise.rb', '# config.extend_remember_period = false', 'config.extend_remember_period = true'
 gsub_file 'config/initializers/devise.rb', 'config.password_length = 6..128', 'config.password_length = 8..128'
 gsub_file 'config/initializers/devise.rb', 'config.email_regexp = /\A[^@\s]+@[^@\s]+\z/', %q(config.email_regexp = Regexp.new(ENV.fetch('EMAIL_REGEXP') { /\A[^@\s]+@[^@\s]+\z/ }))
-# if call `config.omniauth`, do not have to set `omniauth_providers` to `User` model
-insert_into_file 'config/initializers/devise.rb', <<-'RUBY', after: /^  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'\n/
-  $OmniAuthProviders = {}
-  $OmniAuthProviders[:facebook] = {
-    name: 'Facebook',
-    icon: :facebook,
-  }
-  key, secret = ENV['FACEBOOK_KEY'], ENV['FACEBOOK_SECRET']
-  if key && secret
-    config.omniauth :facebook, key, secret
-  end
-  $OmniAuthProviders[:github] = {
-    name: 'GitHub',
-    icon: :github,
-  }
-  key, secret = ENV['GITHUB_CONSUMER_KEY'], ENV['GITHUB_CONSUMER_SECRET']
-  if key && secret
-    config.omniauth :github, key, secret
-  end
-  $OmniAuthProviders[:google_oauth2] = {
-    name: 'Google',
-    icon: :google,
-  }
-  key, secret = ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET']
-  if key && secret
-    config.omniauth :google_oauth2, key, secret
-  end
-  $OmniAuthProviders[:twitter] = {
-    name: 'Twitter',
-    icon: :twitter,
-  }
-  key, secret = ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
-  if key && secret
-    config.omniauth :twitter, key, secret
-  end
-RUBY
 git_commit 'Setup devise'
 
 inject_into_class 'app/models/user.rb', 'User', "  NAME_MAX = 100\n  validates :name, presence: true, length: { maximum: NAME_MAX }\n"
@@ -890,16 +837,6 @@ Dir.glob('app/views/devise/**/*.erb') do |erb|
 end
 gsub_file 'app/views/devise/mailer/password_change.html.slim', /^.*require.*\n$/, '' # remove unused require
 git_commit '`erb2slim`'
-
-gsub_file 'app/views/devise/shared/_links.html.slim', <<-'SLIM', <<-'SLIM'
-    = link_to t('.sign_in_with_provider', provider: provider.to_s.titleize), omniauth_authorize_path(resource_name, provider)
-SLIM
-    = link_to icon($OmniAuthProviders[provider][:icon])+t('.sign_in_with_provider', provider: $OmniAuthProviders[provider][:name]), omniauth_authorize_path(resource_name, provider)
-SLIM
-insert_into_file 'app/controllers/application_controller.rb', <<-'RUBY', after: /^  include QueryParamsHelper\n/
-  include Devise::OmniAuth::UrlHelpers
-RUBY
-git_commit 'Update OmniAuth view'
 
 insert_into_file 'app/views/devise/registrations/new.html.slim', "    = f.input :name, required: true\n", after: /autofocus: true\n/
 create_file 'config/locales/user.ja.yml', <<-YAML
