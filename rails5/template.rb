@@ -165,7 +165,47 @@ ja:
   YAML
 end
 
-gem_bundle 'kaminari'
+gem_bundle 'kaminari' do
+  create_file 'app/views/kaminari/_first_page.html.slim', <<-'SLIM'
+li.first
+  == link_to_unless current_page.first?, t('views.pagination.first'.freeze).html_safe, url, remote: remote
+  SLIM
+  create_file 'app/views/kaminari/_gap.html.slim', <<-'SLIM'
+li.page.gap.disabled
+  a== t('views.pagination.truncate'.freeze).html_safe
+  SLIM
+  create_file 'app/views/kaminari/_last_page.html.slim', <<-'SLIM'
+li.last
+  == link_to_unless current_page.last?, t('views.pagination.last'.freeze).html_safe, url, remote: remote
+  SLIM
+  create_file 'app/views/kaminari/_next_page.html.slim', <<-'SLIM'
+li.next
+  == link_to_unless current_page.last?, t('views.pagination.next'.freeze).html_safe, url, rel: 'next'.freeze, remote: remote
+  SLIM
+  create_file 'app/views/kaminari/_page.html.slim', <<-'SLIM'
+li class=("page#{' active' if page.current?}")
+  == link_to page, url, remote: remote, rel: page.next? ? 'next'.freeze : page.prev? ? 'prev'.freeze : nil
+  SLIM
+  create_file 'app/views/kaminari/_paginator.html.slim', <<-'SLIM'
+== paginator.render do
+  ul.pagination
+    - unless current_page.first?
+      == first_page_tag
+      == prev_page_tag
+    - each_page do |page|
+      - if page.left_outer? || page.right_outer? || page.inside_window?
+        == page_tag page
+      - elsif !page.was_truncated?
+        == gap_tag
+    -  unless current_page.last?
+      == next_page_tag
+      == last_page_tag
+  SLIM
+  create_file 'app/views/kaminari/_prev_page.html.slim', <<-'SLIM'
+li.prev
+  == link_to_unless current_page.first?, t('views.pagination.previous'.freeze).html_safe, url, rel: 'prev'.freeze, remote: remote
+  SLIM
+end
 gem_bundle 'kaminari-i18n' do
   create_file 'config/locales/kaminari.ja.yml', <<-'YAML'
 ja:
