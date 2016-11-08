@@ -127,7 +127,14 @@ html
     noscript
       div(id="noscript-warning")= t(:'layout.noscript_warning')
     .container#main role="main"
+      = render partial: 'layouts/messages'
       = yield
+SLIM
+create_file 'app/views/layouts/_messages.html.slim', <<-'SLIM'
+- flash.each do |name, msg|
+  .alert.alert-dismissable class="alert-#{{'notice' => :success, 'error' => :danger, 'alert' => :warning}[name]}"
+    button type="button" class="close" data-dismiss="alert" aria-hidden="true" &times;
+    = content_tag :div, msg, id: "flash_#{name}" if msg.is_a?(String)
 SLIM
 create_file 'config/locales/layout.en.yml', <<-'YAML'
 en:
