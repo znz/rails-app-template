@@ -300,7 +300,7 @@ create_file 'app/helpers/query_params_helper.rb', <<-'RUBY'
 module QueryParamsHelper
   def params_q(new_params = nil)
     if @params_q.blank?
-      p_q = params.fetch(:q, {})
+      p_q = params.fetch(:q, {}).to_unsafe_h
       @params_q = p_q
     else
       p_q = @params_q
