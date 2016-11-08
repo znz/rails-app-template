@@ -517,8 +517,7 @@ module LinkToHelper
         link_to_new model_class, options, class: 'btn btn-lg btn-block btn-success'.freeze
       end
     else
-      table = params[:table] ? 1 : nil
-      link_to_next_page entries, t(:'helpers.links.next_page'), params: { table: table, q: params_q }, class: 'btn btn-lg btn-block btn-success'.freeze
+      link_to_next_page entries, t(:'helpers.links.next_page'), params: { q: params_q }, class: 'btn btn-lg btn-block btn-success'.freeze
     end
   end
 end
