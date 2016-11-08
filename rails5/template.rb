@@ -737,6 +737,7 @@ gsub_file migration_file, /\# t\./, "t."
 gsub_file migration_file, /\# add_index/, "add_index"
 gsub_file migration_file, /\n\n\n/, <<-RUBY
 
+
       t.string :name, null: false
       t.datetime :deleted_at
 
