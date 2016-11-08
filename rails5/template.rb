@@ -963,9 +963,6 @@ insert_into_file 'app/models/ability.rb', <<-'RUBY', after: /def initialize\(use
 RUBY
 git_commit 'Add authentication and authorization'
 
-uncomment_lines 'public/robots.txt', /(User-agent|Disallow):/
-git_commit 'Disallow from robots'
-
 append_file 'db/seeds.rb', <<-'RUBY'
 
 if Rails.env.development?
