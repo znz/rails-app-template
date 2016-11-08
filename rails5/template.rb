@@ -760,7 +760,7 @@ FactoryGirl.define do
   factory :user do
     sequence(:name) { |n| "Person #{n}" }
     sequence(:email) { |n| "person_#{n}@example.com" }
-    sequence(:password) { |n| sprintf("dummy%03d", n) }
+    sequence(:password) { |n| sprintf("dummy%03d", n) } if User.new.respond_to?(:password=)
 
     after :create do |user|
       user.confirm if Devise.mappings[:user].confirmable?
