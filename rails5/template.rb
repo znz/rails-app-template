@@ -83,9 +83,8 @@ end
 gem_bundle 'bootstrap-sass' do
   copy_file 'app/assets/stylesheets/application.css', 'app/assets/stylesheets/application.scss'
   remove_file 'app/assets/stylesheets/application.css'
-  insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap-sprockets\n", before: "//= require_tree ."
-  append_file 'app/assets/stylesheets/application.scss', <<-SCSS
-
+  create_file 'app/assets/javascripts/use-bootstrap.js', "//= require bootstrap-sprockets\n"
+  create_file 'app/assets/stylesheets/use-bootstrap.scss', <<-SCSS
 // "bootstrap-sprockets" must be imported before "bootstrap" and "bootstrap/variables"
 @import "bootstrap-sprockets";
 @import "bootstrap";
@@ -93,8 +92,7 @@ gem_bundle 'bootstrap-sass' do
 end
 
 gem_bundle 'font-awesome-sass' do
-  append_file 'app/assets/stylesheets/application.scss', <<-SCSS
-
+  create_file 'app/assets/stylesheets/use-font-awesome.scss', <<-SCSS
 @import "font-awesome-sprockets";
 @import "font-awesome";
 
