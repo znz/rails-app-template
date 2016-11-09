@@ -157,7 +157,7 @@ RUBY
 inject_into_class 'app/models/user.rb', 'User', <<-'RUBY'
   validates :provider, :uid, presence: true
 RUBY
-gsub_file 'db/seeds.rb', %q(User.create!(email: admin_email, name: 'Admin User', password: 'adminpass')), %q(User.create!(email: admin_email, name: 'Admin User', password: 'adminpass', provider: 'doorkeeper', uid: '1'))
+gsub_file 'db/seeds.rb', %q(attributes = { email: admin_email, name: 'Admin User' }), %q(attributes = { email: admin_email, name: 'Admin User', provider: 'doorkeeper', uid: '1' })
 insert_into_file 'spec/factories/users.rb', <<-'RUBY', after: /:password.*\n/
     sequence(:provider) { |n| "provider#{n}" }
     sequence(:uid) { |n| "uid#{n}" }

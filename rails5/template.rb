@@ -914,7 +914,11 @@ if Rails.env.development?
   admin_email = 'admin@example.com'
   admin = User.where(email: admin_email).first
   unless admin
-    admin = User.create!(email: admin_email, name: 'Admin User', password: 'adminpass')
+    attributes = { email: admin_email, name: 'Admin User' }
+    if User.new.respond_to?(:password=)
+      attributes[:password] = 'adminpass'
+    end
+    admin = User.create!(attributes)
     admin.confirm if Devise.mappings[:user].confirmable?
   end
   unless admin.has_role? 'admin'
