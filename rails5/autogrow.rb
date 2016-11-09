@@ -19,5 +19,6 @@ jQuery ($) ->
     self.data('timerId', setTimeout(handler, settings.timeoutBuffer))
   $(document).on 'keyup.autogrow change.autogrow input.autogrow paste.autogrow', 'textarea', ->
     $(this).autogrow()
-  $('textarea').autogrow()
+  $(document).on 'turbolinks:load', ->
+    $('textarea').autogrow()
 COFFEE
