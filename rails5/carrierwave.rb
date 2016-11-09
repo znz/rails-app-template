@@ -73,18 +73,13 @@ git_commit 'Update attachment uploader'
 create_file 'spec/fixtures/sample.png', ''
 git_commit 'Add dummy image file'
 
-create_file 'app/assets/stylesheets/attachment.scss', <<-'SCSS'
-.attachment-thumb {
-  width: 100%;
-}
-SCSS
 create_file 'app/helpers/image_tag_helper.rb', <<-'RUBY'
 # frozen_string_literal: true
 module ImageTagHelper
   def attachment_image_tag(resource)
     thumb = resource.attachment_url(:thumb).to_s
     url = resource.attachment_url.to_s
-    link_to image_tag(thumb, alt: File.basename(url), class: 'attachment-thumb'), url, data: { turbolinks: false }
+    link_to image_tag(thumb, alt: File.basename(url), class: 'img-responsive'), url, data: { turbolinks: false }
   end
 end
 RUBY
