@@ -56,7 +56,7 @@ RUBY
 create_file 'app/controllers/users/omniauth_callbacks_controller.rb', <<-'RUBY'
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   protect_from_forgery except: :doorkeeper # https://github.com/plataformatec/devise/issues/2432
-  skip_filter :auto_authenticate_omniauth_user!, only: :doorkeeper
+  skip_before_action :auto_authenticate_omniauth_user!, only: :doorkeeper
 
   def doorkeeper
     # You need to implement the method below in your model (e.g. app/models/user.rb)
@@ -135,7 +135,7 @@ gsub_file 'config/routes.rb', %q(devise_for :users, path_prefix: 'auth', path_na
 
 inject_into_class 'app/controllers/application_controller.rb', 'ApplicationController', <<-'RUBY'
   include AuthDoorkeeper
-  before_filter :auto_authenticate_omniauth_user!
+  before_action :auto_authenticate_omniauth_user!
 RUBY
 create_file 'app/controllers/concerns/auth_doorkeeper.rb', <<-'RUBY'
 module AuthDoorkeeper
