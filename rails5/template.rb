@@ -13,7 +13,7 @@ git_commit '`bundle install`'
 
 gsub_file 'Gemfile', /\n{3,}/, "\n\n"
 create_file '.ruby-version', "#{RUBY_VERSION}\n"
-insert_into_file 'Gemfile', "ruby File.read('.ruby-version')\n", after: "source 'https://rubygems.org'\n"
+insert_into_file 'Gemfile', "ruby '#{RUBY_VERSION}'\n", after: "source 'https://rubygems.org'\n"
 git_commit 'Add .ruby-version'
 
 comment_lines 'Gemfile', /jbuilder/
