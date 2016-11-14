@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 require_relative 'util'
 
+gem_bundle 'jquery-ui-rails'
 create_file 'app/assets/javascripts/autocomplete.coffee', <<-'COFFEE'
 #= require jquery-ui/autocomplete
 jQuery ($) ->
