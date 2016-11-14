@@ -11,14 +11,18 @@ def git_commit(message)
 end
 
 def bundle_install
-  if TEST_MODE
-    run 'bundle install --local >/dev/null'
-  else
-    run 'bundle install'
+  require 'bundler'
+  Bundler.with_clean_env do
+    if TEST_MODE
+      run 'bundle install --local >/dev/null'
+    else
+      run 'bundle install'
+    end
   end
 end
 
 def bundle_update
+  require 'bundler'
   Bundler.with_clean_env do
     run 'bundle update'
   end
