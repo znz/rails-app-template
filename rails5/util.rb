@@ -57,7 +57,7 @@ end
 
 def add_admin_sign_in_to_controller_spec(spec)
   insert_into_file spec, <<-'RUBY', after: /^RSpec\.describe .* do\n/
-  let(:user) { FactoryGirl.create(:admin) }
-  before { sign_in user }
+  let(:admin_user) { FactoryGirl.create(:admin) }
+  before { sign_in admin_user }
   RUBY
 end
