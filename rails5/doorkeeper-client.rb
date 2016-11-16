@@ -174,3 +174,39 @@ RUBY
 git_commit 'Add Omniauth columns to users'
 
 rake_db_migrate
+
+gsub_file 'app/controllers/users_controller.rb', <<-'RUBY', <<-'RUBY'
+    if User.new.respond_to?(:password=)
+      attributes << :password << :password_confirmation
+    end
+RUBY
+    if User.new.respond_to?(:password=)
+      attributes << :password << :password_confirmation
+    end
+    attributes << :provider << :uid
+RUBY
+gsub_file 'spec/controllers/users_controller_spec.rb', <<-'RUBY', <<-'RUBY'
+    if User.new.respond_to?(:password=)
+      attributes[:password] = 'password'
+      attributes[:password_confirmation] = attributes[:password]
+    end
+RUBY
+    if User.new.respond_to?(:password=)
+      attributes[:password] = 'password'
+      attributes[:password_confirmation] = attributes[:password]
+    end
+    attributes[:provider] = 'doorkeeper'
+    attributes[:uid] = 'dummy'
+RUBY
+gsub_file 'app/views/users/_form.html.slim', <<-'SLIM', <<-'SLIM'
+  - if f.object.respond_to?(:password=)
+    = f.input :password, required: true
+    = f.input :password_confirmation, required: true
+SLIM
+  - if f.object.respond_to?(:password=)
+    = f.input :password, required: true
+    = f.input :password_confirmation, required: true
+  = f.input :provider
+  = f.input :uid
+SLIM
+git_commit 'Update scaffold_controller of user with doorkeeper'
