@@ -61,3 +61,21 @@ def add_admin_sign_in_to_controller_spec(spec)
   before { sign_in admin_user }
   RUBY
 end
+
+module CheckedGsubFile
+  def gsub_file(path, flag, *args, &block)
+    data = File.binread(path)
+    case flag
+    when Regexp
+      unless flag =~ data
+        raise "#{flag.inspect} not found in #{path}"
+      end
+    when String
+      unless data.index(flag)
+        raise "#{flag.inspect} not found in #{path}"
+      end
+    end
+    super
+  end
+end
+Rails::Generators::AppGenerator.include CheckedGsubFile
