@@ -757,6 +757,7 @@ gsub_file 'config/initializers/devise.rb', 'config.password_length = 6..128', 'c
 gsub_file 'config/initializers/devise.rb', 'config.email_regexp = /\A[^@\s]+@[^@\s]+\z/', %q(config.email_regexp = Regexp.new(ENV.fetch('EMAIL_REGEXP') { /\A[^@\s]+@[^@\s]+\z/ }))
 git_commit 'Setup devise'
 
+inject_into_class 'app/models/user.rb', 'User', "  validates :email, presence: true\n"
 inject_into_class 'app/models/user.rb', 'User', "  NAME_MAX = 100\n  validates :name, presence: true, length: { maximum: NAME_MAX }\n"
 inject_into_class 'app/models/user.rb', 'User', "  scope :active, -> { where(deleted_at: nil) }\n"
 remove_file 'spec/factories/users.rb'
