@@ -49,7 +49,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top role="navigation"
         span.icon-bar
         span.icon-bar
         span.icon-bar
-      = link_to '/', class: 'navbar-brand' do
+      = link_to '/', class: 'navbar-brand', data: { turbolinks: false } do
         = t(:'nav.brand')
     .collapse.navbar-collapse
       ul.nav.navbar-nav.navbar-right
