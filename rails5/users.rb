@@ -30,6 +30,23 @@ insert_into_file 'app/models/user.rb', <<-'RUBY', before: /^end/
     end
   end
 RUBY
+gsub_file 'app/controllers/users_controller.rb', <<-'RUBY', <<-'RUBY'
+  def update
+    if @user.update(user_params)
+RUBY
+  def update
+    updated = nil
+    begin
+      @user.transaction do
+        @user.roles_name = user_params.fetch(:roles_name, [])
+        @user.update!(user_params)
+        updated = true
+      end
+    rescue ActiveRecord::RecordInvalid
+      updated = false
+    end
+    if updated
+RUBY
 gsub_file 'spec/controllers/users_controller_spec.rb', %Q[  let(:valid_attributes) {\n    skip("Add a hash of attributes valid for your model")\n  }\n], <<-'RUBY'
   let(:valid_attributes) do
     attributes = {
