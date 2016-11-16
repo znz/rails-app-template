@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
-TARGET=/tmp/sample
+TARGET=/tmp/${NAME:-sample}
 export RBENV_VERSION=2.3.2
 export TEST_MODE=1
 cd $(dirname "$0")
