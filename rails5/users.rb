@@ -94,7 +94,7 @@ SLIM
     .col-sm-9.form-labels
       - I18n.t(:role).each do |key, value|
         '
-        label
+        label.checkbox-inline
           = check_box_tag 'user[roles_name][]', key, @user.has_role?(key), id: "user_role_#{key}"
           '
           = value
