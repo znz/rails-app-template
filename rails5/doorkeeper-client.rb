@@ -95,6 +95,14 @@ if ENV['USE_SAME_ID']
         attributes[:id] = id # use same id
   RUBY
 end
+if ENV['ADD_ADMIN_ROLE_TO_FIRST_USER']
+  use_same_id = <<-'RUBY'
+        if self.count == 1
+          # add admin role to first user
+          user.add_role(:admin)
+        end
+  RUBY
+end
 create_file 'app/models/concerns/find_for_doorkeeper_oauth.rb', <<-"RUBY"
 module FindForDoorkeeperOauth
   extend ActiveSupport::Concern
@@ -120,6 +128,7 @@ module FindForDoorkeeperOauth
           attributes[:password] = Devise.friendly_token[0,20]
         end
         user = self.create!(attributes)
+#{add_admin_role}\
       end
       user
     end
