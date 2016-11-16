@@ -47,6 +47,17 @@ RUBY
     end
     if updated
 RUBY
+gsub_file 'app/views/users/show.html.slim', <<-'SLIM', <<-'SLIM'
+    dt= model_class.human_attribute_name(:name)
+    dd= @user.name
+SLIM
+    dt= model_class.human_attribute_name(:name)
+    dd= @user.name
+    - roles_name = @user.roles_name
+    - if roles_name.present?
+      dt= model_class.human_attribute_name(:roles)
+      dd= roles_name.map { |name| I18n.t(name, scope: :role) }.join(', ')
+SLIM
 gsub_file 'spec/controllers/users_controller_spec.rb', %Q[  let(:valid_attributes) {\n    skip("Add a hash of attributes valid for your model")\n  }\n], <<-'RUBY'
   let(:valid_attributes) do
     attributes = {
