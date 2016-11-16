@@ -627,6 +627,8 @@ create_file 'lib/templates/slim/scaffold/index.html.slim', <<-'SLIM'
         = f.button icon(:search)+t(:'helpers.links.search'), class: 'btn btn-primary'
         '
         = link_to_remove_search(:<%= plural_table_name %>)
+        '
+        = link_to_new model_class
 = render partial: "shared/paginate_with_info", locals: { entries: @<%= plural_table_name %> }
 table.table.table-striped.table-hover
   thead
