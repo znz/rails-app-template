@@ -96,7 +96,7 @@ if ENV['USE_SAME_ID']
   RUBY
 end
 if ENV['ADD_ADMIN_ROLE_TO_FIRST_USER']
-  use_same_id = <<-'RUBY'
+  add_admin_role = <<-'RUBY'
         if self.count == 1
           # add admin role to first user
           user.add_role(:admin)
