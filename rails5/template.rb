@@ -841,7 +841,7 @@ Dir.glob('app/views/devise/**/*.erb') do |erb|
   next if /\.text\./ =~ erb
   run "erb2slim -d #{erb} #{erb.sub(/\.erb\z/, '.slim')}"
 end
-gsub_file 'app/views/devise/mailer/password_change.html.slim', /^.*require.*\n$/, '' # remove unused require
+gsub_file 'app/views/devise/mailer/password_change.html.slim', /^.*require.*\n/, '' # remove unused require
 git_commit '`erb2slim`'
 
 insert_into_file 'app/views/devise/registrations/new.html.slim', "    = f.input :name, required: true\n", after: /autofocus: true\n/
