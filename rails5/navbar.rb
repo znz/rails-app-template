@@ -79,7 +79,7 @@ SLIM
 create_file 'config/locales/nav.ja.yml', <<-'YAML'
 ja:
   nav:
-    brand: "マニュアルシステム"
+    brand: "サンプルシステム"
     skip_to_main: "本文までスキップ"
     toggle_navigation: "ナビゲーションをトグル"
   devise:
