@@ -14,7 +14,21 @@ RUBY
     if User.new.respond_to?(:password=)
       attributes << :password << :password_confirmation
     end
-    params.require(:user).permit(*attributes)
+    params.require(:user).permit(*attributes, roles_name: [])
+RUBY
+insert_into_file 'app/models/user.rb', <<-'RUBY', before: /^end/
+
+  def roles_name=(names)
+    I18n.t(:role).each do |key, _|
+      key = key.to_s
+      case
+      when names.include?(key) && !has_role?(key)
+        add_role(key)
+      when !names.include?(key) && has_role?(key)
+        remove_role(key)
+      end
+    end
+  end
 RUBY
 gsub_file 'spec/controllers/users_controller_spec.rb', %Q[  let(:valid_attributes) {\n    skip("Add a hash of attributes valid for your model")\n  }\n], <<-'RUBY'
   let(:valid_attributes) do
@@ -57,5 +71,20 @@ SLIM
   - if f.object.respond_to?(:password=)
     = f.input :password, required: true
     = f.input :password_confirmation, required: true
+  .form-group
+    label.control-label.col-sm-3
+      = User.human_attribute_name(:roles)
+    .col-sm-9.form-labels
+      - I18n.t(:role).each do |key, value|
+        '
+        label
+          = check_box_tag 'user[roles_name][]', key, @user.has_role?(key), id: "user_role_#{key}"
+          '
+          = value
 SLIM
+create_file 'app/assets/stylesheets/form-labels.scss', <<-'SCSS'
+.form-labels label {
+  font-weight: normal;
+}
+SCSS
 git_commit 'Update scaffold_controller of user'

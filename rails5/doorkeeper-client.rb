@@ -171,6 +171,29 @@ insert_into_file 'spec/factories/users.rb', <<-'RUBY', after: /:password.*\n/
     sequence(:provider) { |n| "provider#{n}" }
     sequence(:uid) { |n| "uid#{n}" }
 RUBY
+gsub_file 'config/locales/user.ja.yml', <<-'YAML'.b, <<-'YAML'.b
+ja:
+  activerecord:
+    models:
+      user: "ユーザー"
+    attributes:
+      user:
+        name: "名前"
+        deleted_at: "削除日時"
+        roles: "役割"
+YAML
+ja:
+  activerecord:
+    models:
+      user: "ユーザー"
+    attributes:
+      user:
+        name: "名前"
+        deleted_at: "削除日時"
+        provider: "プロバイダー"
+        uid: "プロバイダーでのユーザーID"
+        roles: "役割"
+YAML
 git_commit 'Add Omniauth columns to users'
 
 rake_db_migrate

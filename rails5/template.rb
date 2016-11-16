@@ -848,10 +848,13 @@ insert_into_file 'app/views/devise/registrations/new.html.slim', "    = f.input 
 create_file 'config/locales/user.ja.yml', <<-YAML
 ja:
   activerecord:
+    models:
+      user: "ユーザー"
     attributes:
       user:
         name: "名前"
         deleted_at: "削除日時"
+        roles: "役割"
 YAML
 insert_into_file 'app/controllers/application_controller.rb', <<-'RUBY', before: /^end/
 
