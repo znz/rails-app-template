@@ -88,11 +88,11 @@ RUBY
 gsub_file 'spec/controllers/users_controller_spec.rb', 'skip("Add assertions for updated state")', %q[expect(user.name).to eq 'new name']
 gsub_file 'spec/controllers/users_controller_spec.rb', 'User.create! valid_attributes', 'FactoryGirl.create :user'
 gsub_file 'spec/controllers/users_controller_spec.rb', 'expect(assigns(:users)).to eq([user])', 'expect(assigns(:users)).to match_array([admin_user, user])'
-gsub_file 'app/views/users/_form.html.slim', <<-'SLIM', <<-'SLIM'
-  = f.input :email
-
-  = f.input :name
-
+gsub_file 'app/views/users/_form.html.slim', Regexp.new(<<-'SLIM'), <<-'SLIM'
+  = f\.input :email
++  = f\.input :name
++
+  \.form-group
 SLIM
   = f.input :email, required: true, autofocus: true
   = f.input :name, required: true
@@ -109,6 +109,8 @@ SLIM
           = check_box_tag 'user[roles_name][]', key, @user.has_role?(key), id: "user_role_#{key}"
           '
           = value
+
+  .form-group
 SLIM
 create_file 'app/assets/stylesheets/form-labels.scss', <<-'SCSS'
 .form-labels label {
