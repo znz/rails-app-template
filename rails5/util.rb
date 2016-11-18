@@ -49,8 +49,8 @@ def rake_db_migrate
   git_commit '`rake db:migrate`'
 end
 
-def find_executable(exe, gem: exe)
-  unless ENV["PATH"].split(File::PATH_SEPARATOR).any? { |path| File.executable?("#{path}/#{exe}#{RbConfig::CONFIG['EXEEXT']}") }
+def find_executable(exe, args=%w[-h], gem: exe)
+  unless system(exe, *args, [:out, :err] => IO::NULL)
     run "gem install #{gem}"
   end
 end
