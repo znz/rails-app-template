@@ -20,22 +20,70 @@ module TextToHtmlHelper
     "&nbsp;" => "\u00A0",
   }
   TABLE_FOR_TEXT_TO_HTML__.default_proc = proc do |hash, key|
-    uri = key
-    begin
-      URI.parse(uri) # validate
-      "<a class=\"noreflink\">#{uri}</a>"
-    rescue
-      uri
+    if %r[\A(?<pre>.)?(?<uri>https?://[!-~]+)\z] =~ key
+      post = nil
+      if pre == '(' && uri[-1] == ')'
+        uri.chop!
+        post = ')'
+      end
+      begin
+        URI.parse(uri) # validate
+        "#{pre}<a class=\"noreflink\">#{uri}</a>#{post}"
+      rescue
+        unless uri.empty?
+          post = "#{uri[-1]}#{post}"
+          uri.chop!
+          retry
+        end
+        key
+      end
+    else
+      key
     end
   end
 
   def text_to_html_content(text)
-    text.gsub(%r{&nbsp;|[&<>"\r\n]|https?://[!-~]+}, TABLE_FOR_TEXT_TO_HTML__).html_safe
+    text.gsub(%r{&nbsp;|['&<>"\r\n]|.?https?://[!-~]+}, TABLE_FOR_TEXT_TO_HTML__).html_safe
   end
 
   def text_to_html(text)
     html = text_to_html_content(text)
     content_tag(:div, html, class: 'text-to-html', data: { turbolinks: false })
+  end
+end
+RUBY
+create_file 'spec/helpers/text_to_html_helper_spec.rb', <<-'RUBY'
+# -*- coding: utf-8 -*-
+# frozen_string_literal: true
+require 'rails_helper'
+
+describe TextToHtmlHelper, type: :helper do
+  include TextToHtmlHelper
+
+  [
+    ['', ''],
+    ["'", '&#39;'],
+    ['&', '&amp;'],
+    ['&amp;', '&amp;amp;'],
+    ['"', '&quot;'],
+    ['<>', '&lt;&gt;'],
+    ["\r", ''],
+    ["\n", "<br />\n"],
+    ["\r\n", "<br />\n"],
+    ['&nbsp;', "\u00A0"],
+    ['http://example.com/', '<a class="noreflink">http://example.com/</a>'],
+    ['http://localhost:3000/', '<a class="noreflink">http://localhost:3000/</a>'],
+    ['shttp://localhost:3000/', 's<a class="noreflink">http://localhost:3000/</a>'],
+    ["\nhttp://localhost:3000/", "<br />\n<a class=\"noreflink\">http://localhost:3000/</a>"],
+    ["http://localhost:3000/)", "<a class=\"noreflink\">http://localhost:3000/)</a>"],
+    ["(http://localhost:3000/)", "(<a class=\"noreflink\">http://localhost:3000/</a>)"],
+    ["[http://localhost:3000/]", "[<a class=\"noreflink\">http://localhost:3000/</a>]"],
+    ["http://localhost:3000/]", "<a class=\"noreflink\">http://localhost:3000/</a>]"],
+    ["[[http://localhost:3000/]]", "[[<a class=\"noreflink\">http://localhost:3000/</a>]]"],
+  ].each do |input, output|
+    it "text_to_html_content(#{input.dump}) should eq #{output.dump}" do
+      expect(text_to_html_content(input)).to eq output
+    end
   end
 end
 RUBY
