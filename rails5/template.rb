@@ -288,8 +288,8 @@ else
   File.write('vendor/assets/javascripts/HolidayChk.js', open('vendor/assets/javascripts/HolidayChk.js', 'r:cp932:utf-8', &:read))
 end
 create_file 'app/assets/javascripts/datepicker.coffee', <<-'COFFEE'
-#= require jquery-ui/datepicker
-#= require jquery-ui/datepicker-ja
+#= require jquery-ui/widgets/datepicker
+#= require jquery-ui/i18n/datepicker-ja
 #= require HolidayChk
 jQuery ($) ->
   isHoliday = (day, selectable) ->

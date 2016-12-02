@@ -4,7 +4,7 @@ require_relative 'util'
 
 gem_bundle 'jquery-ui-rails'
 create_file 'app/assets/javascripts/autocomplete.coffee', <<-'COFFEE'
-#= require jquery-ui/autocomplete
+#= require jquery-ui/widgets/autocomplete
 jQuery ($) ->
   set_handlers = ->
     $('input.autocomplete').each ->

@@ -7,3 +7,7 @@ gem_bundle 'touchpunch-rails' do
 #= require jquery.ui.touch-punch
   COFFEE
 end
+create_file 'app/assets/javascripts/jquery-ui/mouse.js', <<-JAVASCRIPT
+//= require jquery-ui/widgets/mouse
+JAVASCRIPT
+git_commit 'Add workaround file for touchpunch-rails 1.0.3'
